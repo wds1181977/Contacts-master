@@ -146,8 +146,8 @@
 
         <string name="about_body"><![CDATA[
         北京邮电大学网络教育学院学生毕业设计《通讯录》
-         <br/> 学院网址 http://home.buptnu.com.cn
-         <br/>代码地址<a href=\'https://github.com/makovkastar/FloatingActionButton\'>https://github.com/makovkastar/FloatingActionButton</a>
+         <br/> 学院网址<a href=\'http://home.buptnu.com.cn\'> http://home.buptnu.com.cn</a>
+         <br/>代码地址<a href=\'https://github.com/wds1181977/Contacts-master.git\'>https://github.com/wds1181977/Contacts-master.git</a>
     ]]></string>
 	
 	<string name="save_first">你需要先保存该号码到你本地通讯录。</string>
