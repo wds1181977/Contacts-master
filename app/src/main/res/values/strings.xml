@@ -172,4 +172,9 @@
     <string name="popup_text_create_new_quick_call">Create New Quick Dial</string>
 
     <string name="save_first">You must save this number in your native contact first.</string>
+    <string name="title_activity_contact_editor">ContactEditorActivity</string>
+    <string name="action_settings">Settings</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

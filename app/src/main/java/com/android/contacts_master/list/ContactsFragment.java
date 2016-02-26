@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.android.contacts_master.Constants;
 import com.android.contacts_master.R;
+import com.android.contacts_master.activity.ContactEditorActivity;
 import com.android.contacts_master.activity.ContactInfoActivity;
 import com.android.contacts_master.activity.PeopleActivity;
 import com.android.contacts_master.provider.ContactsProjection;
@@ -166,9 +167,12 @@ public class ContactsFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri insertUri = ContactsContract.Contacts.CONTENT_URI;
-                Intent intent = new Intent(Intent.ACTION_INSERT, insertUri);
-                startActivityForResult(intent, 1008);
+
+                Intent intent = new Intent(getActivity(), ContactEditorActivity.class);
+                startActivity(intent);
+//                Uri insertUri = ContactsContract.Contacts.CONTENT_URI;
+//                Intent intent = new Intent(Intent.ACTION_INSERT, insertUri);
+//                startActivityForResult(intent, 1008);
             }
         });
         fab.attachToListView(mContactsListView, new ScrollDirectionListener() {

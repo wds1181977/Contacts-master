@@ -13,12 +13,14 @@
     <dimen name="slidingmenu_offset">60dp</dimen>
     <dimen name="list_padding">10dp</dimen>
     <dimen name="shadow_width">5dp</dimen>
-    
+    <dimen name="editor_padding_top">0dip</dimen>
     <dimen name="incall_handler_width">70dp</dimen>
     <dimen name="search_view_width">50dip</dimen>
     <dimen name="history_detail_button_height">48dp</dimen>
     
     <dimen name="singup_edit_item_height">48dp</dimen>
 	<dimen name="share_card_item_height">48dp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 	
 </resources>

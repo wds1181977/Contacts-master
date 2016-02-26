@@ -12,6 +12,7 @@
     <color name="transparent_full">#00000000</color>
     <color name="transparent_half">#90000000</color>
     <color name="gray_line_color">#ffdddddd</color>
+    <color name="actionbar_text_color">#ffffff</color>
     <color name="blue_color">#ff0bafde</color>
     <color name="orange_color">#fff48221</color>
     <color name="green_color">#ff71bf95</color>

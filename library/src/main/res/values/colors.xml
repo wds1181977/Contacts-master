@@ -3,4 +3,7 @@
 <resources>
     <!-- http://www.google.com/design/spec/style/color.html#color-ui-color-palette -->
     <color name="material_blue_500">#5677fc</color>
+	    <color name="contacts_accent_color">#FFFFFF</color>
+		 <color name="floating_action_button_icon_color">@color/contacts_accent_color</color>
+		  <color name="actionbar_icon_color">#ffffff</color>
 </resources>
