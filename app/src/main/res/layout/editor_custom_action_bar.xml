@@ -18,7 +18,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:weightSum="1">
 
     <ImageView
         android:id="@+id/save_menu_item"
@@ -41,5 +42,7 @@
         android:textColor="@color/actionbar_text_color"
         android:text="@string/menu_done"
         style="?android:attr/actionButtonStyle" />
+
+
 
 </LinearLayout>

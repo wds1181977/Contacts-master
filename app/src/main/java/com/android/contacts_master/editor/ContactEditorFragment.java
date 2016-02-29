@@ -106,7 +106,7 @@ public class ContactEditorFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+    mListener = null;
     }
 
     /**
@@ -122,6 +122,13 @@ public class ContactEditorFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+
+    public   void setListener(OnFragmentInteractionListener listener){
+        if (mListener != null) {
+            mListener = listener;
+        }
     }
 
 }

@@ -3,29 +3,32 @@ package com.android.contacts_master.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
 import com.android.contacts_master.R;
 import com.android.contacts_master.editor.ContactEditorFragment;
+import com.android.contacts_master.list.ContactsFragment;
 
-public class ContactEditorActivity extends AppCompatActivity {
+
+public class ContactEditorActivity extends AppCompatActivity implements ContactEditorFragment.OnFragmentInteractionListener {
     View mSaveMenuItem;
     private ContactEditorFragment mFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contact_editor);
 
+      setContentView(R.layout.activity_contact_editor);
         if (getSupportActionBar() != null) {
             ActionBar actionBar = getSupportActionBar();
-            // Inflate a custom action bar that contains the "done" button for saving changes
-            // to the contact
+
             LayoutInflater inflater = (LayoutInflater) getSystemService
                     (Context.LAYOUT_INFLATER_SERVICE);
             View customActionBarView = inflater.inflate(R.layout.editor_custom_action_bar, null);
@@ -54,11 +57,20 @@ public class ContactEditorActivity extends AppCompatActivity {
             actionBar.setCustomView(customActionBarView);
         }
 
-//        mFragment = (ContactEditorFragment) getFragmentManager().findFragmentById(
-//                R.id.contact_editor_fragment);
-//        mFragment.setListener(mFragmentListener);
+       mFragment = (ContactEditorFragment) getFragmentManager().findFragmentById(
+                R.id.contact_editor_fragment);
+        mFragment.setListener(this);
 
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        onBackPressed();
+    }
 }
