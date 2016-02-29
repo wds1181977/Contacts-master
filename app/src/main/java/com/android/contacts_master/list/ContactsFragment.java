@@ -168,11 +168,16 @@ public class ContactsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getActivity(), ContactEditorActivity.class);
-                startActivity(intent);
-//                Uri insertUri = ContactsContract.Contacts.CONTENT_URI;
-//                Intent intent = new Intent(Intent.ACTION_INSERT, insertUri);
-//                startActivityForResult(intent, 1008);
+
+                if(Constants.isgithub) {
+                    Uri insertUri = ContactsContract.Contacts.CONTENT_URI;
+                    Intent intent = new Intent(Intent.ACTION_INSERT, insertUri);
+                    startActivityForResult(intent, 1008);
+                }else{
+                    Intent intent = new Intent(getActivity(), ContactEditorActivity.class);
+                    intent.setAction(Intent.ACTION_INSERT);
+                    startActivity(intent);
+                }
             }
         });
         fab.attachToListView(mContactsListView, new ScrollDirectionListener() {

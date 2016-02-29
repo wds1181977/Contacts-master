@@ -70,7 +70,7 @@ public class ContactInfoActivity extends AppCompatActivity {
 	private View mNoContactView;
 	
 	private PopupWindow mPopupWindow;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -119,8 +119,16 @@ public class ContactInfoActivity extends AppCompatActivity {
 			}
 
 			case R.id.edit:{
-				Uri personUri = ContentUris.withAppendedId(ContactsUtils.Uri_People, mContactInfo.contactId);
-				editContact(personUri);
+				if(Constants.isgithub) {
+
+					Uri personUri = ContentUris.withAppendedId(ContactsUtils.Uri_People, mContactInfo.contactId);
+					editContact(personUri);
+				}{
+
+					Intent intent = new Intent(this, ContactEditorActivity.class);
+					intent.setAction(Intent.ACTION_EDIT);
+					startActivity(intent);
+				}
 				return true;
 			}
 			case R.id.delete:{

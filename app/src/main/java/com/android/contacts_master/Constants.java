@@ -1,7 +1,7 @@
 package com.android.contacts_master;
 
 public class Constants {
-
+	public static final boolean isgithub=false;
 	public static final String QC_SHARED_PREFERENCES_CONSTANTS = "com.zhuang.quickcall.QC_SHARED_PREFERENCES_CONSTANTS";
 	public static final String QC_IS_FIRST_OPEN = "com.zhuang.quickcall.QC_IS_FIRST_OPEN_V1";
 	public static final String QC_IS_FIRST_CREATE = "com.zhuang.quickcall.QC_IS_FIRST_CREATE_V1";

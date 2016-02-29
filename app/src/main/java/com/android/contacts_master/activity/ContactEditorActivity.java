@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.android.contacts_master.R;
 import com.android.contacts_master.editor.ContactEditorFragment;
-import com.android.contacts_master.list.ContactsFragment;
+
 
 
 public class ContactEditorActivity extends AppCompatActivity implements ContactEditorFragment.OnFragmentInteractionListener {
@@ -26,6 +26,9 @@ public class ContactEditorActivity extends AppCompatActivity implements ContactE
         super.onCreate(savedInstanceState);
 
       setContentView(R.layout.activity_contact_editor);
+
+        final Intent intent = getIntent();
+        final String action = intent.getAction();
         if (getSupportActionBar() != null) {
             ActionBar actionBar = getSupportActionBar();
 
@@ -36,20 +39,20 @@ public class ContactEditorActivity extends AppCompatActivity implements ContactE
             mSaveMenuItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                //    mFragment.doSaveAction();
+                    mFragment.doSaveAction();
                     /** M: Add for ALPS01566939 @ {***/
 
                     /** @ }**/
                 }
             });
             TextView title = (TextView) customActionBarView.findViewById(R.id.title);
-//            if (Intent.ACTION_EDIT.equals(action)) {
-//                title.setText(getResources().getString(
-//                        R.string.contact_editor_title_existing_contact));
-//            } else {
-//                title.setText(getResources().getString(
-//                        R.string.contact_editor_title_new_contact));
-//            }
+            if (Intent.ACTION_EDIT.equals(action)) {
+                title.setText(getResources().getString(
+                        R.string.edit));
+            } else {
+                title.setText(getResources().getString(
+                        R.string.menu_done));
+            }
             // Show the custom action bar but hide the home icon and title
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
                     ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME |
