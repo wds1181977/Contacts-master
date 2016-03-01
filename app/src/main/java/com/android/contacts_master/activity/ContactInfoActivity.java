@@ -127,6 +127,7 @@ public class ContactInfoActivity extends AppCompatActivity {
 
 					Intent intent = new Intent(this, ContactEditorActivity.class);
 					intent.setAction(Intent.ACTION_EDIT);
+					intent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID,mContactInfo.contactId);
 					startActivity(intent);
 				}
 				return true;
@@ -388,6 +389,7 @@ public class ContactInfoActivity extends AppCompatActivity {
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
+		mContactId=-1;
 		if(LogLevel.MARKET){
 			MarketLog.d(TAG, "onDestroy...");
 		}

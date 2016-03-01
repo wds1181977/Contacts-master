@@ -3,10 +3,13 @@ package com.android.contacts_master.editor;
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,9 +26,24 @@ import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
 import android.widget.Toast;
-
+import com.android.contacts_master.Constants;
 import com.android.contacts_master.R;
+import com.android.contacts_master.activity.ContactInfoActivity;
+import com.android.contacts_master.bean.ContactInfo;
+import com.android.contacts_master.bean.EmailContact;
+import com.android.contacts_master.bean.TaggedContactPhoneNumber;
+import com.android.contacts_master.detail.ContactInfoItem;
+import com.android.contacts_master.email.EmailSender;
+import com.android.contacts_master.logging.DevLog;
+import com.android.contacts_master.logging.LogLevel;
+import com.android.contacts_master.logging.MarketLog;
+import com.android.contacts_master.util.BitmapUtils;
+import com.android.contacts_master.util.ContactsUtils;
+import com.android.contacts_master.util.DialUtils;
 import com.android.contacts_master.util.ProgressHandler;
+import com.baidu.mobstat.StatService;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,10 +58,13 @@ public class ContactEditorFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private ContactInfo mContactInfo;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    public long mContactId;
+    String mAction;
+
 
     private EditText mNameEdit,mPhoneEdit,mAddressEdit,mEmailEdit;
     private OnFragmentInteractionListener mListener;
@@ -70,6 +91,8 @@ public class ContactEditorFragment extends Fragment {
         // Required empty public constructor
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,18 +118,111 @@ public class ContactEditorFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.edit_contact, menu);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (Intent.ACTION_EDIT.equals(mAction)) {
+            // Either...
+            // 1) orientation change but load never finished.
+            // or
+            // 2) not an orientation change.  data needs to be loaded for first time.
+            bindEditors();
+        }
+
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        final MenuItem doneMenu = menu.findItem(R.id.menu_done);
+    public void onResume(){
+        super.onResume();
+        StatService.onResume(this);
 
 
-        // Set visibility of menus
-        doneMenu.setVisible(true);
     }
+
+
+    public void load(String action, long ContactId ) {
+        ///M:fix ALPS01020577,Original Google Code
+        ///mAction = action;
+        ///mLookupUri = lookupUri;
+        //There only has 2 place will call this function,from:onSaveCompleted() or ContactEditorActivity
+        //When from ContactEditorActivity:first enter EditorFragment or restart ContactEditorActivity
+        //when from onSaveCompleted():when saved complete,the action will always be Intent.ACTION_EDIT
+        //So here should check the mAction to avoid reset it to older value
+       if (mAction == null || (action == Intent.ACTION_EDIT && mAction != null)) {
+            mAction = action;
+           mContactId = ContactId;
+
+        }
+
+
+
+    }
+
+
+    private  void   bindEditors(){
+
+        mContactInfo = ContactsUtils.getContactInfoByContactId(getActivity(), mContactId);
+        if (mContactInfo == null) {
+            if (LogLevel.MARKET) {
+
+            }
+
+            return;
+        }
+        refreshContact();
+
+    }
+    private void refreshContact(){
+
+
+        mNameEdit.setText(mContactInfo.displayName);
+        List<TaggedContactPhoneNumber> phoneList = ContactsUtils.getPersonalContactPhoneNumbers(getActivity(), mContactInfo.contactId);
+        if(phoneList != null && phoneList.size() > 0){
+
+        } else {
+           mPhoneEdit.setText("");
+        }
+
+        for(final TaggedContactPhoneNumber phone : phoneList){
+            if(phone == null || TextUtils.isEmpty(phone.originalNumber)){
+                if(LogLevel.DEV){
+
+                }
+                continue;
+            }
+
+
+
+        //    mPhoneEdit.setTypeText(phone.numberTag);
+            mPhoneEdit.setText(phone.originalNumber);
+
+        }
+
+        List<EmailContact> mailList = ContactsUtils.getEmailAddresses(getActivity(), mContactInfo.contactId);
+        if(mailList != null && mailList.size() > 0){
+
+        } else {
+
+        }
+
+        for(final EmailContact mail : mailList){
+            if(mail == null || TextUtils.isEmpty(mail.emailAddress)){
+                if(LogLevel.DEV){
+
+                }
+                continue;
+            }
+
+
+          //  item.setTypeText(mail.emailTag);
+            mEmailEdit.setText(mail.emailAddress);
+
+        }
+
+
+    }
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -130,6 +246,7 @@ public class ContactEditorFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
     mListener = null;
+
 
     }
 
@@ -156,16 +273,10 @@ public class ContactEditorFragment extends Fragment {
     }
 
 
-    public  void doSaveAction(){
-        doInsert();
 
-            getActivity().finish();
-
-    }
-
-
-    public void doInsert() {
+    public void doSaveAction() {
         if(mNameEdit.getText().toString().trim().equals("")&&mPhoneEdit.getText().toString().trim().equals("")){
+            getActivity().finish();
                        return;
         }
         mProgressHandler.showDialog(getFragmentManager());
@@ -182,7 +293,7 @@ public class ContactEditorFragment extends Fragment {
         values.put(StructuredName.GIVEN_NAME, mNameEdit.getText().toString().trim());
         getActivity()
                 .getContentResolver()
-                .insert(android.provider.ContactsContract.Data.CONTENT_URI,
+                .insert(ContactsContract.Data.CONTENT_URI,
                         values);
 
 // 往data表入电话数据
@@ -193,7 +304,7 @@ public class ContactEditorFragment extends Fragment {
         values.put(Phone.TYPE, Phone.TYPE_MOBILE);
         getActivity()
                 .getContentResolver()
-                .insert(android.provider.ContactsContract.Data.CONTENT_URI,
+                .insert(ContactsContract.Data.CONTENT_URI,
                         values);
 // 往data表入Email数据
         values.clear();
@@ -203,8 +314,14 @@ public class ContactEditorFragment extends Fragment {
         values.put(Email.TYPE, Email.TYPE_WORK);
         getActivity()
                 .getContentResolver()
-                .insert(android.provider.ContactsContract.Data.CONTENT_URI,
+                .insert(ContactsContract.Data.CONTENT_URI,
                         values);
+
+        Intent mIntent=new Intent(getActivity(),ContactInfoActivity.class);
+        mIntent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID,rawContactId);
+        getActivity().startActivity(mIntent);
+        getActivity().finish();
+
 
     }
 

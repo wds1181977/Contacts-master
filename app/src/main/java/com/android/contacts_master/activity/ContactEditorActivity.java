@@ -1,7 +1,10 @@
 package com.android.contacts_master.activity;
 
 
+import android.app.AlertDialog;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,18 +12,25 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.contacts_master.Constants;
 import com.android.contacts_master.R;
 import com.android.contacts_master.editor.ContactEditorFragment;
-
+import com.android.contacts_master.util.ContactsUtils;
 
 
 public class ContactEditorActivity extends AppCompatActivity implements ContactEditorFragment.OnFragmentInteractionListener {
     View mSaveMenuItem;
     private ContactEditorFragment mFragment;
+    boolean isEditMode=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +59,9 @@ public class ContactEditorActivity extends AppCompatActivity implements ContactE
             if (Intent.ACTION_EDIT.equals(action)) {
                 title.setText(getResources().getString(
                         R.string.edit));
+
             } else {
+
                 title.setText(getResources().getString(
                         R.string.menu_done));
             }
@@ -63,13 +75,40 @@ public class ContactEditorActivity extends AppCompatActivity implements ContactE
        mFragment = (ContactEditorFragment) getFragmentManager().findFragmentById(
                 R.id.contact_editor_fragment);
         mFragment.setListener(this);
+        long  ContactId = Intent.ACTION_EDIT.equals(action) ? getIntent().getLongExtra(Constants.EXTRA_CONTACT_PERSON_ID, -1) : -1;
+        mFragment.load(action, ContactId);
 
 
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+
+        getMenuInflater().inflate(R.menu.edit_contact, menu);
+
+        return super.onCreateOptionsMenu(menu);
+
+
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.menu_diss:{
+                 finish();
+            }
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        mFragment.doSaveAction();
     }
 
     @Override

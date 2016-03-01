@@ -21,7 +21,7 @@
 
 
     <item
-        android:id="@+id/menu_done"
+        android:id="@+id/menu_diss"
         android:title="@string/menu_diss" />
 
   <!--  <item
