@@ -28,7 +28,7 @@ import android.provider.ContactsContract.RawContacts;
 import android.widget.Toast;
 import com.android.contacts_master.Constants;
 import com.android.contacts_master.R;
-import com.android.contacts_master.activity.ContactInfoActivity;
+import com.android.contacts_master.activity.ContactDetailActivity;
 import com.android.contacts_master.bean.ContactInfo;
 import com.android.contacts_master.bean.EmailContact;
 import com.android.contacts_master.bean.TaggedContactPhoneNumber;
@@ -317,7 +317,7 @@ public class ContactEditorFragment extends Fragment {
                 .insert(ContactsContract.Data.CONTENT_URI,
                         values);
 
-        Intent mIntent=new Intent(getActivity(),ContactInfoActivity.class);
+        Intent mIntent=new Intent(getActivity(),ContactDetailActivity.class);
         mIntent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID,rawContactId);
         getActivity().startActivity(mIntent);
         getActivity().finish();

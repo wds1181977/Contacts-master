@@ -31,7 +31,7 @@ import android.widget.TextView;
 import com.android.contacts_master.Constants;
 import com.android.contacts_master.R;
 import com.android.contacts_master.activity.ContactEditorActivity;
-import com.android.contacts_master.activity.ContactInfoActivity;
+import com.android.contacts_master.activity.ContactDetailActivity;
 import com.android.contacts_master.activity.PeopleActivity;
 import com.android.contacts_master.provider.ContactsProjection;
 import com.android.contacts_master.util.ImageLoader;
@@ -329,7 +329,7 @@ public class ContactsFragment extends Fragment {
     }
 
     private void switchContactInfo(long personId){
-        Intent intent = new Intent(getActivity(), ContactInfoActivity.class);
+        Intent intent = new Intent(getActivity(), ContactDetailActivity.class);
         intent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID, personId);
         getActivity().startActivity(intent);
 
