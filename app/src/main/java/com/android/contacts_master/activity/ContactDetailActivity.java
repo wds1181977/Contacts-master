@@ -39,7 +39,7 @@ import com.baidu.mobstat.StatService;
 import java.util.List;
 
 /**
- * ContactInfoActivity
+ * ContactDetailActivity
  * @author wds
  */
 public class ContactDetailActivity extends AppCompatActivity {
@@ -172,31 +172,8 @@ public class ContactDetailActivity extends AppCompatActivity {
 			ActionBar actionBar = getSupportActionBar();
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
-		mBackButton = (ImageButton) this.findViewById(R.id.button_back);
-		mBackButton.setVisibility(View.GONE);
-		mBackButton.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
-		
-		mEditButton = (ImageButton) this.findViewById(R.id.button_little_edit);
-		
-		mEditButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if (mPopupWindow != null) {
-					if (mPopupWindow.isShowing()) {
-						mPopupWindow.dismiss();
-					} else {
-						mPopupWindow.showAsDropDown(v);
-					}
-				}
-			}
-		});
+
 		
 		mNameView = (TextView) this.findViewById(R.id.name_view);
 		mCompanyView = (TextView) this.findViewById(R.id.company_view);
@@ -384,7 +361,7 @@ public class ContactDetailActivity extends AppCompatActivity {
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
-		mContactId=-1;
+
 		if(LogLevel.MARKET){
 			MarketLog.d(TAG, "onDestroy...");
 		}

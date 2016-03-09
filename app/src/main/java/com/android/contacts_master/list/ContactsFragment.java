@@ -167,15 +167,16 @@ public class ContactsFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Uri insertUri = ContactsContract.Contacts.CONTENT_URI;
 
                 if(Constants.isgithub) {
-                    Uri insertUri = ContactsContract.Contacts.CONTENT_URI;
+
                     Intent intent = new Intent(Intent.ACTION_INSERT, insertUri);
                     startActivityForResult(intent, 1008);
                 }else{
                     Intent intent = new Intent(getActivity(), ContactEditorActivity.class);
                     intent.setAction(Intent.ACTION_INSERT);
+               //     intent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID, insertUri);
                     startActivity(intent);
                 }
             }

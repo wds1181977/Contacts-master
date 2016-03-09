@@ -37,13 +37,31 @@ import com.android.contacts_master.email.EmailSender;
 import com.android.contacts_master.logging.DevLog;
 import com.android.contacts_master.logging.LogLevel;
 import com.android.contacts_master.logging.MarketLog;
+import com.android.contacts_master.provider.ContactsProjection;
 import com.android.contacts_master.util.BitmapUtils;
 import com.android.contacts_master.util.ContactsUtils;
 import com.android.contacts_master.util.DialUtils;
 import com.android.contacts_master.util.ProgressHandler;
 import com.baidu.mobstat.StatService;
-
+import android.database.Cursor;
 import java.util.List;
+import java.util.ArrayList;
+import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.CommonDataKinds.Note;
+import android.provider.ContactsContract.CommonDataKinds.Organization;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.CommonDataKinds.StructuredName;
+import android.provider.ContactsContract.CommonDataKinds.Website;
+import android.provider.ContactsContract.Data;
+import android.provider.ContactsContract.RawContacts;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,7 +82,7 @@ public class ContactEditorFragment extends Fragment {
     private String mParam2;
     public long mContactId;
     String mAction;
-
+    String oldname;
 
     private EditText mNameEdit,mPhoneEdit,mAddressEdit,mEmailEdit;
     private OnFragmentInteractionListener mListener;
@@ -112,6 +130,7 @@ public class ContactEditorFragment extends Fragment {
         mPhoneEdit=(EditText)root.findViewById(R.id.edit_phone);
         mAddressEdit=(EditText)root.findViewById(R.id.edit_address);
         mEmailEdit=(EditText)root.findViewById(R.id.edit_email);
+
 
 
         return root;
@@ -176,6 +195,7 @@ public class ContactEditorFragment extends Fragment {
 
 
         mNameEdit.setText(mContactInfo.displayName);
+        oldname =mContactInfo.displayName;
         List<TaggedContactPhoneNumber> phoneList = ContactsUtils.getPersonalContactPhoneNumbers(getActivity(), mContactInfo.contactId);
         if(phoneList != null && phoneList.size() > 0){
 
@@ -275,11 +295,31 @@ public class ContactEditorFragment extends Fragment {
 
 
     public void doSaveAction() {
-        if(mNameEdit.getText().toString().trim().equals("")&&mPhoneEdit.getText().toString().trim().equals("")){
+        mProgressHandler.showDialog(getFragmentManager());
+       String name= mNameEdit.getText().toString().trim();
+       String phone= mPhoneEdit.getText().toString().trim();
+        String email=  mEmailEdit.getText().toString().trim();
+
+        if(name.equals("")&&phone.equals("")){
             getActivity().finish();
                        return;
         }
-        mProgressHandler.showDialog(getFragmentManager());
+        if (Intent.ACTION_EDIT.equals(mAction)) {
+
+            updateContact(name,phone,email,null,null,null);
+
+        }else{
+            insertContacts(name,phone,null,email);
+        }
+
+
+
+
+    }
+
+
+    private void insertContacts(String name,String phone,String adress,String  email){
+
         ContentValues values = new ContentValues();
 // 首先向RawContacts.CONTENT_URI执行一个空值插入，目的是获取系统返回的rawContactId
         Uri rawContactUri = getActivity().getContentResolver()
@@ -319,10 +359,130 @@ public class ContactEditorFragment extends Fragment {
 
         Intent mIntent=new Intent(getActivity(),ContactDetailActivity.class);
         mIntent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID,rawContactId);
-        getActivity().startActivity(mIntent);
+
+       getActivity().startActivity(mIntent);
         getActivity().finish();
 
 
+    }
+
+  private void  updateContacts(String name,String phone,String adress,String  email){
+
+      ContentValues values = new ContentValues();
+
+//      Uri rawContactUri = getActivity().getContentResolver()
+//              .update(RawContacts.CONTENT_URI, values);
+//      long rawContactId = ContentUris.parseId(rawContactUri);
+//      values.put(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE);// 内容类型
+//
+//      values.put(StructuredName.GIVEN_NAME,name);
+
+      values.put(Phone.NUMBER, phone);
+      values.put(Phone.TYPE, Phone.TYPE_MOBILE);
+//
+//      values.put(Email.DATA, email);
+//      values.put(Email.TYPE, Email.TYPE_WORK);
+      String where = ContactsContract.Data.RAW_CONTACT_ID + "=? AND "
+              + ContactsContract.Data.MIMETYPE + "=?";
+      String[] selectionArgs = new String[] { String.valueOf(mContactInfo.contactId),
+              Phone.CONTENT_ITEM_TYPE };
+      getActivity()
+              .getContentResolver().update(ContactsContract.Data.CONTENT_URI, values,
+                 where, selectionArgs);
+      getActivity().finish();
+
+  }
+
+
+
+    // 根据姓名更新联系人
+    public void updateContact( String name,
+                                 String phone, String email, String website, String organization,
+                                 String note) {
+        Cursor cursor =   getActivity().getContentResolver().query(Data.CONTENT_URI,
+                new String[] { Data.RAW_CONTACT_ID },
+
+                ContactsContract.Contacts.DISPLAY_NAME + "=?",
+                new String[] { oldname }, null);
+        if (!cursor.moveToFirst()) {
+            return ;
+        }
+        String id = cursor
+                .getString(cursor.getColumnIndex(Data.RAW_CONTACT_ID));
+        cursor.close();
+        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+        ops.add(ContentProviderOperation
+                .newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(
+
+                        Data.RAW_CONTACT_ID + "=?" + " AND "
+                                + ContactsContract.Data.MIMETYPE + " = ?"
+                                + " AND " + Phone.TYPE + "=?",
+                        new String[] { String.valueOf(id),
+                                Phone.CONTENT_ITEM_TYPE,
+                                String.valueOf(Phone.TYPE_HOME) })
+                .withValue(Phone.NUMBER, phone).build());
+
+        // 更新email
+        ops.add(ContentProviderOperation
+                .newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(
+                        Data.RAW_CONTACT_ID + "=?" + " AND "
+                                + ContactsContract.Data.MIMETYPE + " = ?"
+                                + " AND " + Email.TYPE + "=?",
+                        new String[] { String.valueOf(id),
+                                Email.CONTENT_ITEM_TYPE,
+                                String.valueOf(Email.TYPE_HOME) })
+                .withValue(Email.DATA, email).build());
+
+        // 更新姓名
+        ops.add(ContentProviderOperation
+                .newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(
+                        Data.RAW_CONTACT_ID + "=?" + " AND "
+                                + ContactsContract.Data.MIMETYPE + " = ?",
+                        new String[] { String.valueOf(id),
+                                StructuredName.CONTENT_ITEM_TYPE })
+                .withValue(StructuredName.DISPLAY_NAME, name).build());
+
+        // 更新网站
+        ops.add(ContentProviderOperation
+                .newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(
+                        Data.RAW_CONTACT_ID + "=?" + " AND "
+                                + ContactsContract.Data.MIMETYPE + " = ?",
+                        new String[] { String.valueOf(id),
+                                Website.CONTENT_ITEM_TYPE })
+                .withValue(Website.URL, website).build());
+
+        // 更新公司
+        ops.add(ContentProviderOperation
+                .newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(
+                        Data.RAW_CONTACT_ID + "=?" + " AND "
+                                + ContactsContract.Data.MIMETYPE + " = ?",
+                        new String[] { String.valueOf(id),
+                                Organization.CONTENT_ITEM_TYPE })
+                .withValue(Organization.COMPANY, organization).build());
+
+        // 更新note
+        ops.add(ContentProviderOperation
+                .newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(
+                        Data.RAW_CONTACT_ID + "=?" + " AND "
+                                + ContactsContract.Data.MIMETYPE + " = ?",
+                        new String[] { String.valueOf(id),
+                                Note.CONTENT_ITEM_TYPE })
+                .withValue(Note.NOTE, note).build());
+
+        try {
+            getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY,
+                    ops);
+
+        } catch (Exception e) {
+
+        }
+        getActivity().finish();
     }
 
 
