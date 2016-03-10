@@ -305,8 +305,7 @@ public class ContactEditorFragment extends Fragment {
                        return;
         }
         if (Intent.ACTION_EDIT.equals(mAction)) {
-
-            updateContact(name,phone,email,null,null,null);
+            updateContacts(name, phone, null,email);
 
         }else{
             insertContacts(name,phone,null,email);
@@ -357,48 +356,19 @@ public class ContactEditorFragment extends Fragment {
                 .insert(ContactsContract.Data.CONTENT_URI,
                         values);
 
-        Intent mIntent=new Intent(getActivity(),ContactDetailActivity.class);
-        mIntent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID,rawContactId);
-
-       getActivity().startActivity(mIntent);
+//        Intent mIntent=new Intent(getActivity(),ContactDetailActivity.class);
+//        mIntent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID,id);
+//
+//       getActivity().startActivity(mIntent);
         getActivity().finish();
 
 
     }
 
-  private void  updateContacts(String name,String phone,String adress,String  email){
-
-      ContentValues values = new ContentValues();
-
-//      Uri rawContactUri = getActivity().getContentResolver()
-//              .update(RawContacts.CONTENT_URI, values);
-//      long rawContactId = ContentUris.parseId(rawContactUri);
-//      values.put(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE);// 内容类型
-//
-//      values.put(StructuredName.GIVEN_NAME,name);
-
-      values.put(Phone.NUMBER, phone);
-      values.put(Phone.TYPE, Phone.TYPE_MOBILE);
-//
-//      values.put(Email.DATA, email);
-//      values.put(Email.TYPE, Email.TYPE_WORK);
-      String where = ContactsContract.Data.RAW_CONTACT_ID + "=? AND "
-              + ContactsContract.Data.MIMETYPE + "=?";
-      String[] selectionArgs = new String[] { String.valueOf(mContactInfo.contactId),
-              Phone.CONTENT_ITEM_TYPE };
-      getActivity()
-              .getContentResolver().update(ContactsContract.Data.CONTENT_URI, values,
-                 where, selectionArgs);
-      getActivity().finish();
-
-  }
 
 
 
-    // 根据姓名更新联系人
-    public void updateContact( String name,
-                                 String phone, String email, String website, String organization,
-                                 String note) {
+    private void  updateContacts(String name,String phone,String adress,String  email){
         Cursor cursor =   getActivity().getContentResolver().query(Data.CONTENT_URI,
                 new String[] { Data.RAW_CONTACT_ID },
 
@@ -409,81 +379,148 @@ public class ContactEditorFragment extends Fragment {
         }
         String id = cursor
                 .getString(cursor.getColumnIndex(Data.RAW_CONTACT_ID));
+
         cursor.close();
-        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-        ops.add(ContentProviderOperation
-                .newUpdate(ContactsContract.Data.CONTENT_URI)
-                .withSelection(
+        ContentValues values = new ContentValues();
 
-                        Data.RAW_CONTACT_ID + "=?" + " AND "
-                                + ContactsContract.Data.MIMETYPE + " = ?"
-                                + " AND " + Phone.TYPE + "=?",
-                        new String[] { String.valueOf(id),
-                                Phone.CONTENT_ITEM_TYPE,
-                                String.valueOf(Phone.TYPE_HOME) })
-                .withValue(Phone.NUMBER, phone).build());
+        String whereName=  ContactsContract.Data.RAW_CONTACT_ID + "=?" + " AND "
+                + ContactsContract.Data.MIMETYPE + " = ?";
+        String[] selectionArgsName=     new String[] { String.valueOf(id),
+                StructuredName.CONTENT_ITEM_TYPE };
 
-        // 更新email
-        ops.add(ContentProviderOperation
-                .newUpdate(ContactsContract.Data.CONTENT_URI)
-                .withSelection(
-                        Data.RAW_CONTACT_ID + "=?" + " AND "
-                                + ContactsContract.Data.MIMETYPE + " = ?"
-                                + " AND " + Email.TYPE + "=?",
-                        new String[] { String.valueOf(id),
-                                Email.CONTENT_ITEM_TYPE,
-                                String.valueOf(Email.TYPE_HOME) })
-                .withValue(Email.DATA, email).build());
+        values.put(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE);// 内容类型
 
-        // 更新姓名
-        ops.add(ContentProviderOperation
-                .newUpdate(ContactsContract.Data.CONTENT_URI)
-                .withSelection(
-                        Data.RAW_CONTACT_ID + "=?" + " AND "
-                                + ContactsContract.Data.MIMETYPE + " = ?",
-                        new String[] { String.valueOf(id),
-                                StructuredName.CONTENT_ITEM_TYPE })
-                .withValue(StructuredName.DISPLAY_NAME, name).build());
+        values.put(StructuredName.GIVEN_NAME,name);
 
-        // 更新网站
-        ops.add(ContentProviderOperation
-                .newUpdate(ContactsContract.Data.CONTENT_URI)
-                .withSelection(
-                        Data.RAW_CONTACT_ID + "=?" + " AND "
-                                + ContactsContract.Data.MIMETYPE + " = ?",
-                        new String[] { String.valueOf(id),
-                                Website.CONTENT_ITEM_TYPE })
-                .withValue(Website.URL, website).build());
+        getActivity()
+                .getContentResolver().update(ContactsContract.Data.CONTENT_URI, values,
+                whereName, selectionArgsName);
 
-        // 更新公司
-        ops.add(ContentProviderOperation
-                .newUpdate(ContactsContract.Data.CONTENT_URI)
-                .withSelection(
-                        Data.RAW_CONTACT_ID + "=?" + " AND "
-                                + ContactsContract.Data.MIMETYPE + " = ?",
-                        new String[] { String.valueOf(id),
-                                Organization.CONTENT_ITEM_TYPE })
-                .withValue(Organization.COMPANY, organization).build());
 
-        // 更新note
-        ops.add(ContentProviderOperation
-                .newUpdate(ContactsContract.Data.CONTENT_URI)
-                .withSelection(
-                        Data.RAW_CONTACT_ID + "=?" + " AND "
-                                + ContactsContract.Data.MIMETYPE + " = ?",
-                        new String[] { String.valueOf(id),
-                                Note.CONTENT_ITEM_TYPE })
-                .withValue(Note.NOTE, note).build());
+        values.put(Phone.NUMBER, phone);
+        values.put(Phone.TYPE, Phone.TYPE_MOBILE);
 
-        try {
-            getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY,
-                    ops);
 
-        } catch (Exception e) {
+        String wherePhone = ContactsContract.Data.RAW_CONTACT_ID + "=? AND "
+                + ContactsContract.Data.MIMETYPE + "=?";
+        String[] selectionArgsPhone = new String[] { String.valueOf(id),
+                Phone.CONTENT_ITEM_TYPE };
+        getActivity()
+                .getContentResolver().update(ContactsContract.Data.CONTENT_URI, values,
+                wherePhone, selectionArgsPhone);
 
-        }
+
+        String whereEmail = ContactsContract.Data.RAW_CONTACT_ID + "=?" + " AND "
+                + ContactsContract.Data.MIMETYPE + " = ?"
+                + " AND " + Email.TYPE + "=?";
+        String[] selectionArgsEmail =   new String[] { String.valueOf(id),
+                Email.CONTENT_ITEM_TYPE,
+                String.valueOf(Email.TYPE_WORK) };
+        values.put(Email.DATA, email);
+        values.put(Email.TYPE, Email.TYPE_WORK);
+
+        getActivity()
+                .getContentResolver().update(ContactsContract.Data.CONTENT_URI, values,
+                whereEmail, selectionArgsEmail);
+
         getActivity().finish();
+
     }
+
+
+
+//
+//
+//
+//    // 根据姓名更新联系人
+//    public void updateContact( String name,
+//                                 String phone, String email, String website, String organization,
+//                                 String note) {
+//        Cursor cursor =   getActivity().getContentResolver().query(Data.CONTENT_URI,
+//                new String[] { Data.RAW_CONTACT_ID },
+//
+//                ContactsContract.Contacts.DISPLAY_NAME + "=?",
+//                new String[] { oldname }, null);
+//        if (!cursor.moveToFirst()) {
+//            return ;
+//        }
+//        String id = cursor
+//                .getString(cursor.getColumnIndex(Data.RAW_CONTACT_ID));
+//        cursor.close();
+//        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+//        ops.add(ContentProviderOperation
+//                .newUpdate(ContactsContract.Data.CONTENT_URI)
+//                .withSelection(
+//
+//                        Data.RAW_CONTACT_ID + "=?" + " AND "
+//                                + ContactsContract.Data.MIMETYPE + " = ?"
+//                                + " AND " + Phone.TYPE + "=?",
+//                        new String[] { String.valueOf(id),
+//                                Phone.CONTENT_ITEM_TYPE,
+//                                String.valueOf(Phone.TYPE_HOME) })
+//                .withValue(Phone.NUMBER, phone).build());
+//
+//        // 更新email
+//        ops.add(ContentProviderOperation
+//                .newUpdate(ContactsContract.Data.CONTENT_URI)
+//                .withSelection(
+//                        Data.RAW_CONTACT_ID + "=?" + " AND "
+//                                + ContactsContract.Data.MIMETYPE + " = ?"
+//                                + " AND " + Email.TYPE + "=?",
+//                        new String[] { String.valueOf(id),
+//                                Email.CONTENT_ITEM_TYPE,
+//                                String.valueOf(Email.TYPE_HOME) })
+//                .withValue(Email.DATA, email).build());
+//
+//        // 更新姓名
+//        ops.add(ContentProviderOperation
+//                .newUpdate(ContactsContract.Data.CONTENT_URI)
+//                .withSelection(
+//                        Data.RAW_CONTACT_ID + "=?" + " AND "
+//                                + ContactsContract.Data.MIMETYPE + " = ?",
+//                        new String[] { String.valueOf(id),
+//                                StructuredName.CONTENT_ITEM_TYPE })
+//                .withValue(StructuredName.DISPLAY_NAME, name).build());
+//
+//        // 更新网站
+//        ops.add(ContentProviderOperation
+//                .newUpdate(ContactsContract.Data.CONTENT_URI)
+//                .withSelection(
+//                        Data.RAW_CONTACT_ID + "=?" + " AND "
+//                                + ContactsContract.Data.MIMETYPE + " = ?",
+//                        new String[] { String.valueOf(id),
+//                                Website.CONTENT_ITEM_TYPE })
+//                .withValue(Website.URL, website).build());
+//
+//        // 更新公司
+//        ops.add(ContentProviderOperation
+//                .newUpdate(ContactsContract.Data.CONTENT_URI)
+//                .withSelection(
+//                        Data.RAW_CONTACT_ID + "=?" + " AND "
+//                                + ContactsContract.Data.MIMETYPE + " = ?",
+//                        new String[] { String.valueOf(id),
+//                                Organization.CONTENT_ITEM_TYPE })
+//                .withValue(Organization.COMPANY, organization).build());
+//
+//        // 更新note
+//        ops.add(ContentProviderOperation
+//                .newUpdate(ContactsContract.Data.CONTENT_URI)
+//                .withSelection(
+//                        Data.RAW_CONTACT_ID + "=?" + " AND "
+//                                + ContactsContract.Data.MIMETYPE + " = ?",
+//                        new String[] { String.valueOf(id),
+//                                Note.CONTENT_ITEM_TYPE })
+//                .withValue(Note.NOTE, note).build());
+//
+//        try {
+//            getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY,
+//                    ops);
+//
+//        } catch (Exception e) {
+//
+//        }
+//        getActivity().finish();
+//    }
 
 
 
