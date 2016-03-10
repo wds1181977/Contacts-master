@@ -119,7 +119,7 @@ public class ContactDetailActivity extends AppCompatActivity {
 					editContact(personUri);
 				}{
 
-					Intent intent = new Intent(this, ContactEditorActivity.class);
+					Intent intent = new Intent();
 					intent.setAction(Intent.ACTION_EDIT);
 					intent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID,mContactInfo.contactId);
 					startActivity(intent);

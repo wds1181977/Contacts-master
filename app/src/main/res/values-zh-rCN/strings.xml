@@ -77,7 +77,7 @@
     <string name="long_click_contact_edit_contact">编辑联系人</string>
     <string name="long_click_contact_delete_contact">删除</string>
     <string name="delete_contact">删除联系人</string>
-    <string name="delete_contact_message">确定要删除所选的联系人？</string>
+    <string name="delete_contact_message">确定要删除所选的联系人？</string>xinzeng
     <string name="delete_contact_failed_title">删除失败。</string>
     <string name="delete_contact_failed">删除失败，请重试。</string>
     <string name="delete_quick_message">你确定要删除该快速呼叫？</string>

@@ -41,11 +41,27 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+               </intent-filter>
         </activity>
         <activity
             android:name=".activity.ContactEditorActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:theme="@style/AppTheme" >
+
+            <intent-filter android:label="@string/edit">
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+
+            </intent-filter>
+            <intent-filter android:label="@string/menu_done">
+                <action android:name="android.intent.action.INSERT" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+            </intent-filter>
         </activity>
 
     </application>
