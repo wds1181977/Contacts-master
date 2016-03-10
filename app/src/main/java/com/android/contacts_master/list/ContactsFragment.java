@@ -174,10 +174,8 @@ public class ContactsFragment extends Fragment {
                     Intent intent = new Intent(Intent.ACTION_INSERT, insertUri);
                     startActivityForResult(intent, 1008);
                 }else{
-                    Intent intent = new Intent(getActivity(), ContactEditorActivity.class);
-                    intent.setAction(Intent.ACTION_INSERT);
-               //     intent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID, insertUri);
-                    startActivity(intent);
+
+                    startActivity(new Intent(Intent.ACTION_INSERT,insertUri));
                 }
             }
         });
@@ -330,9 +328,12 @@ public class ContactsFragment extends Fragment {
     }
 
     private void switchContactInfo(long personId){
-        Intent intent = new Intent(getActivity(), ContactDetailActivity.class);
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
         intent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID, personId);
         getActivity().startActivity(intent);
+
+
 
     }
 
