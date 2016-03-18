@@ -69,6 +69,7 @@
     <string name="call_error_title">拨打电话错误</string>
 
     <!-- long click contact menu item -->
+    <string name="hint_findContacts">查找联系人</string>
      <string name="long_click_contact_create_new_quick_call">创建新快速呼叫</string>
     <string name="long_click_contact_call_contact">呼叫联系人</string>
     <string name="long_click_contact_send_message">发送短信</string>

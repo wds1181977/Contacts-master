@@ -119,7 +119,7 @@ public class ContactDetailActivity extends AppCompatActivity {
 					editContact(personUri);
 				}{
 
-					Intent intent = new Intent();
+					Intent intent = new Intent(ContactDetailActivity.this,ContactEditorActivity.class);
 					intent.setAction(Intent.ACTION_EDIT);
 					intent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID,mContactInfo.contactId);
 					startActivity(intent);
@@ -313,25 +313,7 @@ public class ContactDetailActivity extends AppCompatActivity {
 		}
 	}
 	
-	private void createNewQuickCall(long peopleId, String name){
-//		List<TaggedContactPhoneNumber> list = ContactsUtils.getPersonalContactPhoneNumbers(this, peopleId);
-//		if(list == null || list.isEmpty()){
-//			if(LogLevel.DEV){
-//				DevLog.e(TAG, "sendMessage : list is null");
-//			}
-//			return;
-//		} else if (list.size() == 1){
-//			TaggedContactPhoneNumber numbers = list.get(0);
-//			Intent intent = new Intent(ContactInfoActivity.this, CreateQuickCallActivity.class);
-//			intent.putExtra(QuickCallConstants.EXTRA_SELECT_NAME, name);
-//			intent.putExtra(QuickCallConstants.EXTRA_SELECT_NUMBER, numbers.originalNumber);
-//			intent.putExtra(QuickCallConstants.EXTRA_SELECT_PHOTO_ID, numbers.photo_id);
-//			ContactInfoActivity.this.startActivity(intent);
-//			return;
-//		}
-//
-//		new PhoneSelectorDialog(this, list, name, PhoneSelectorDialog.TYPE_SELECT_CONTACT).show();
-	}
+
 	
 	private void editContact(final Uri personUri) {
 		Intent intent = new Intent(Intent.ACTION_EDIT, personUri);
@@ -355,7 +337,7 @@ public class ContactDetailActivity extends AppCompatActivity {
 	@Override
 	public void finish(){
 		super.finish();
-	//	this.overridePendingTransition(R.anim.back_in_left, R.anim.back_out_right);
+
 	}
 	
 	@Override
@@ -366,7 +348,7 @@ public class ContactDetailActivity extends AppCompatActivity {
 			MarketLog.d(TAG, "onDestroy...");
 		}
 		
-		//leakCleanUpRootView();
+
 	}
 	
 }

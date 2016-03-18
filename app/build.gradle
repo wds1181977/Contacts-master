@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.android.contacts_master"
-        minSdkVersion 11
-        targetSdkVersion 23
+        minSdkVersion 21
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
@@ -26,4 +26,6 @@ dependencies {
     compile project(':library')
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
+    compile project(':library_circular')
+    compile project(':library-circular')
 }

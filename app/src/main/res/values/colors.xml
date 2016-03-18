@@ -16,10 +16,21 @@
     <color name="blue_color">#ff0bafde</color>
     <color name="orange_color">#fff48221</color>
     <color name="green_color">#ff71bf95</color>
-
+    <color name="actionbar_background_color">#0fc6dc</color>
+    <!-- Color of the theme of the Dialer app -->
+    <color name="dialtacts_theme_color">#0288d1</color>
     <color name="error_color">#ffe03d3e</color>
     <color name="guide_bg_color">#ff1f1f24</color>
+    <!-- Text color of the search box text as entered by user  -->
+    <color name="searchbox_text_color">#000000</color>
+    <!-- Background color of the search box -->
+    <color name="searchbox_background_color">#ffffff</color>
 
+    <color name="searchbox_hint_text_color">#737373</color>
+    <color name="searchbox_icon_tint">@color/searchbox_hint_text_color</color>
+
+    <color name="search_shortcut_background_color">#b6b6b6</color>
+    <color name="search_shortcut_icon_color">#f8f8f8</color>
     <color name="top_bar_color">#ff1f1f24</color>
 
     <color name="bg_dialog_title_color">#ff0bafde</color>
@@ -52,4 +63,14 @@
 
     <color name="gray_white_color">#fff0f0f0</color>
     <color name="quick_call_main_bg_color">#ff1f1f24</color>
+    <color name="gplus_color_1">#3e802f</color>
+    <color name="gplus_color_2">#f4b400</color>
+    <color name="gplus_color_3">#427fed</color>
+    <color name="gplus_color_4">#b23424</color>
+    <integer-array name="gplus_colors">
+        <item>@color/gplus_color_1</item>
+        <item>@color/gplus_color_2</item>
+        <item>@color/gplus_color_3</item>
+        <item>@color/gplus_color_4</item>
+    </integer-array>
 </resources>

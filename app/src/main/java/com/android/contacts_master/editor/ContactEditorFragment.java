@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.provider.ContactsContract;
@@ -72,8 +73,10 @@ import android.provider.ContactsContract.RawContacts;
  * create an instance of this fragment.
  */
 public class ContactEditorFragment extends Fragment {
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private Context mContext;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private ContactInfo mContactInfo;
@@ -84,9 +87,10 @@ public class ContactEditorFragment extends Fragment {
     String mAction;
     String oldname;
 
-    private EditText mNameEdit,mPhoneEdit,mAddressEdit,mEmailEdit;
+    private EditText mNameEdit, mPhoneEdit, mAddressEdit, mEmailEdit;
     private OnFragmentInteractionListener mListener;
     ProgressHandler mProgressHandler = new ProgressHandler();
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -110,7 +114,6 @@ public class ContactEditorFragment extends Fragment {
     }
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,17 +123,37 @@ public class ContactEditorFragment extends Fragment {
         }
     }
 
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mContext = activity;
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+
+
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_contact_editor, container, false);
 
-        mNameEdit=(EditText)root.findViewById(R.id.edit_name);
-        mPhoneEdit=(EditText)root.findViewById(R.id.edit_phone);
-        mAddressEdit=(EditText)root.findViewById(R.id.edit_address);
-        mEmailEdit=(EditText)root.findViewById(R.id.edit_email);
-
+        mNameEdit = (EditText) root.findViewById(R.id.edit_name);
+        mPhoneEdit = (EditText) root.findViewById(R.id.edit_phone);
+        mAddressEdit = (EditText) root.findViewById(R.id.edit_address);
+        mEmailEdit = (EditText) root.findViewById(R.id.edit_email);
 
 
         return root;
@@ -151,7 +174,7 @@ public class ContactEditorFragment extends Fragment {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         StatService.onResume(this);
 
@@ -159,7 +182,7 @@ public class ContactEditorFragment extends Fragment {
     }
 
 
-    public void load(String action, long ContactId ) {
+    public void load(String action, long ContactId) {
         ///M:fix ALPS01020577,Original Google Code
         ///mAction = action;
         ///mLookupUri = lookupUri;
@@ -167,20 +190,19 @@ public class ContactEditorFragment extends Fragment {
         //When from ContactEditorActivity:first enter EditorFragment or restart ContactEditorActivity
         //when from onSaveCompleted():when saved complete,the action will always be Intent.ACTION_EDIT
         //So here should check the mAction to avoid reset it to older value
-       if (mAction == null || (action == Intent.ACTION_EDIT && mAction != null)) {
+        if (mAction == null || (action == Intent.ACTION_EDIT && mAction != null)) {
             mAction = action;
-           mContactId = ContactId;
+            mContactId = ContactId;
 
         }
-
 
 
     }
 
 
-    private  void   bindEditors(){
+    private void bindEditors() {
 
-        mContactInfo = ContactsUtils.getContactInfoByContactId(getActivity(), mContactId);
+        mContactInfo = ContactsUtils.getContactInfoByContactId(mContext, mContactId);
         if (mContactInfo == null) {
             if (LogLevel.MARKET) {
 
@@ -191,57 +213,56 @@ public class ContactEditorFragment extends Fragment {
         refreshContact();
 
     }
-    private void refreshContact(){
+
+    private void refreshContact() {
 
 
         mNameEdit.setText(mContactInfo.displayName);
-        oldname =mContactInfo.displayName;
-        List<TaggedContactPhoneNumber> phoneList = ContactsUtils.getPersonalContactPhoneNumbers(getActivity(), mContactInfo.contactId);
-        if(phoneList != null && phoneList.size() > 0){
+        oldname = mContactInfo.displayName;
+        List<TaggedContactPhoneNumber> phoneList = ContactsUtils.getPersonalContactPhoneNumbers(mContext, mContactInfo.contactId);
+        if (phoneList != null && phoneList.size() > 0) {
 
         } else {
-           mPhoneEdit.setText("");
+            mPhoneEdit.setText("");
         }
 
-        for(final TaggedContactPhoneNumber phone : phoneList){
-            if(phone == null || TextUtils.isEmpty(phone.originalNumber)){
-                if(LogLevel.DEV){
+        for (final TaggedContactPhoneNumber phone : phoneList) {
+            if (phone == null || TextUtils.isEmpty(phone.originalNumber)) {
+                if (LogLevel.DEV) {
 
                 }
                 continue;
             }
 
 
-
-        //    mPhoneEdit.setTypeText(phone.numberTag);
+            //    mPhoneEdit.setTypeText(phone.numberTag);
             mPhoneEdit.setText(phone.originalNumber);
 
         }
 
-        List<EmailContact> mailList = ContactsUtils.getEmailAddresses(getActivity(), mContactInfo.contactId);
-        if(mailList != null && mailList.size() > 0){
+        List<EmailContact> mailList = ContactsUtils.getEmailAddresses(mContext, mContactInfo.contactId);
+        if (mailList != null && mailList.size() > 0) {
 
         } else {
 
         }
 
-        for(final EmailContact mail : mailList){
-            if(mail == null || TextUtils.isEmpty(mail.emailAddress)){
-                if(LogLevel.DEV){
+        for (final EmailContact mail : mailList) {
+            if (mail == null || TextUtils.isEmpty(mail.emailAddress)) {
+                if (LogLevel.DEV) {
 
                 }
                 continue;
             }
 
 
-          //  item.setTypeText(mail.emailTag);
+            //  item.setTypeText(mail.emailTag);
             mEmailEdit.setText(mail.emailAddress);
 
         }
 
 
     }
-
 
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -251,24 +272,6 @@ public class ContactEditorFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    mListener = null;
-
-
-    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -286,76 +289,84 @@ public class ContactEditorFragment extends Fragment {
     }
 
 
-    public   void setListener(OnFragmentInteractionListener listener){
+    public void setListener(OnFragmentInteractionListener listener) {
         if (mListener != null) {
             mListener = listener;
         }
     }
 
 
-
     public void doSaveAction() {
         mProgressHandler.showDialog(getFragmentManager());
-       String name= mNameEdit.getText().toString().trim();
-       String phone= mPhoneEdit.getText().toString().trim();
-        String email=  mEmailEdit.getText().toString().trim();
+        String name = mNameEdit.getText().toString().trim();
+        String phone = mPhoneEdit.getText().toString().trim();
+        String email = mEmailEdit.getText().toString().trim();
 
-        if(name.equals("")&&phone.equals("")){
+        if (name.equals("") && phone.equals("")) {
             getActivity().finish();
-                       return;
+            return;
         }
         if (Intent.ACTION_EDIT.equals(mAction)) {
-            updateContacts(name, phone, null,email);
+            updateContacts(name, phone, null, email);
 
-        }else{
-            insertContacts(name,phone,null,email);
+        } else {
+            insertContacts(name, phone, null, email);
         }
-
-
 
 
     }
 
 
-    private void insertContacts(String name,String phone,String adress,String  email){
+    private void insertContacts(String name, String phone, String adress, String email) {
+
 
         ContentValues values = new ContentValues();
 // 首先向RawContacts.CONTENT_URI执行一个空值插入，目的是获取系统返回的rawContactId
-        Uri rawContactUri = getActivity().getContentResolver()
+        Uri rawContactUri = mContext.getContentResolver()
                 .insert(RawContacts.CONTENT_URI, values);
         long rawContactId = ContentUris.parseId(rawContactUri);
 // 往data表入姓名数据
-        values.clear();
-        values.put(Data.RAW_CONTACT_ID, rawContactId);
-        values.put(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE);// 内容类型
+        if (!TextUtils.isEmpty(name)) {
+            values.clear();
+            values.put(Data.RAW_CONTACT_ID, rawContactId);
+            values.put(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE);// 内容类型
 
-        values.put(StructuredName.GIVEN_NAME, mNameEdit.getText().toString().trim());
-        getActivity()
-                .getContentResolver()
-                .insert(ContactsContract.Data.CONTENT_URI,
-                        values);
-
+            values.put(StructuredName.GIVEN_NAME, mNameEdit.getText().toString().trim());
+            mContext
+                    .getContentResolver()
+                    .insert(ContactsContract.Data.CONTENT_URI,
+                            values);
+        }
 // 往data表入电话数据
-        values.clear();
-        values.put(Data.RAW_CONTACT_ID, rawContactId);
-        values.put(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE);// 内容类型
-        values.put(Phone.NUMBER, mPhoneEdit.getText().toString());
-        values.put(Phone.TYPE, Phone.TYPE_MOBILE);
-        getActivity()
-                .getContentResolver()
-                .insert(ContactsContract.Data.CONTENT_URI,
-                        values);
-// 往data表入Email数据
-        values.clear();
-        values.put(Data.RAW_CONTACT_ID, rawContactId);
-        values.put(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE);// 内容类型
-        values.put(Email.DATA, mEmailEdit.getText().toString());
-        values.put(Email.TYPE, Email.TYPE_WORK);
-        getActivity()
-                .getContentResolver()
-                .insert(ContactsContract.Data.CONTENT_URI,
-                        values);
+        if (!TextUtils.isEmpty(phone)) {
+            values.clear();
+            values.put(Data.RAW_CONTACT_ID, rawContactId);
+            values.put(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE);// 内容类型
+            values.put(Phone.NUMBER, mPhoneEdit.getText().
 
+                            toString()
+
+            );
+            values.put(Phone.TYPE, Phone.TYPE_MOBILE);
+            mContext
+                    .getContentResolver()
+                    .
+
+                            insert(ContactsContract.Data.CONTENT_URI,
+                                    values);
+        }
+// 往data表入Email数据
+        if (!TextUtils.isEmpty(email)) {
+            values.clear();
+            values.put(Data.RAW_CONTACT_ID, rawContactId);
+            values.put(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE);// 内容类型
+            values.put(Email.DATA, mEmailEdit.getText().toString());
+            values.put(Email.TYPE, Email.TYPE_WORK);
+            mContext
+                    .getContentResolver()
+                    .insert(ContactsContract.Data.CONTENT_URI,
+                            values);
+        }
 //        Intent mIntent=new Intent(getActivity(),ContactDetailActivity.class);
 //        mIntent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID,id);
 //
@@ -369,7 +380,7 @@ public class ContactEditorFragment extends Fragment {
 
 
     private void  updateContacts(String name,String phone,String adress,String  email){
-        Cursor cursor =   getActivity().getContentResolver().query(Data.CONTENT_URI,
+        Cursor cursor =   mContext.getContentResolver().query(Data.CONTENT_URI,
                 new String[] { Data.RAW_CONTACT_ID },
 
                 ContactsContract.Contacts.DISPLAY_NAME + "=?",
@@ -392,7 +403,7 @@ public class ContactEditorFragment extends Fragment {
 
         values.put(StructuredName.GIVEN_NAME,name);
 
-        getActivity()
+        mContext
                 .getContentResolver().update(ContactsContract.Data.CONTENT_URI, values,
                 whereName, selectionArgsName);
 
@@ -405,7 +416,7 @@ public class ContactEditorFragment extends Fragment {
                 + ContactsContract.Data.MIMETYPE + "=?";
         String[] selectionArgsPhone = new String[] { String.valueOf(id),
                 Phone.CONTENT_ITEM_TYPE };
-        getActivity()
+        mContext
                 .getContentResolver().update(ContactsContract.Data.CONTENT_URI, values,
                 wherePhone, selectionArgsPhone);
 
@@ -419,7 +430,7 @@ public class ContactEditorFragment extends Fragment {
         values.put(Email.DATA, email);
         values.put(Email.TYPE, Email.TYPE_WORK);
 
-        getActivity()
+        mContext
                 .getContentResolver().update(ContactsContract.Data.CONTENT_URI, values,
                 whereEmail, selectionArgsEmail);
 

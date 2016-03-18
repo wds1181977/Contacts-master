@@ -1,6 +1,6 @@
 package com.android.contacts_master.list;
 
-import android.annotation.SuppressLint;
+
 import android.content.AsyncQueryHandler;
 import android.content.Context;
 import android.content.Intent;
@@ -18,13 +18,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
@@ -35,6 +38,7 @@ import com.android.contacts_master.activity.ContactDetailActivity;
 import com.android.contacts_master.activity.PeopleActivity;
 import com.android.contacts_master.provider.ContactsProjection;
 import com.android.contacts_master.util.ImageLoader;
+import com.android.contacts_master.util.ProgressHandler;
 import com.melnykov.fab.FloatingActionButton;
 import com.melnykov.fab.ScrollDirectionListener;
 
@@ -42,62 +46,48 @@ import com.melnykov.fab.ScrollDirectionListener;
  * Created by wds on 16-2-22.
  */
 public class ContactsFragment extends Fragment {
-    private  BackListener  mBackListener;
-    public interface BackListener {
-        void onUpBackPressed();
-    }
-    public void setBackListener(BackListener listener) {
-        mBackListener = listener;
-    }
 
+
+    private  Context mContext;
     private static final int QUERY_TOKEN = 303;
     private ListView mContactsListView;
     private EditText mSearchTextView;
-    //    private ContactAlphaView mContactAlphaView;
+
     private TextView mOverlayView;
-    private View mEmptyView;
-    private View mQueryProgressView;
-    private TextView mEmptyTextView;
-    private ImageButton mSearchClearButton;
+
     private static final int QUERY_COMPLETE = 0;
     private static final int QUERY_NO_CONTACTS = 1;
     private static final int QUERY_NO_RESULTS = 2;
     private WindowManager windowManager;
-    private OverlayThread overlayThread;
-    private boolean isHasCreated=false;
+    private LinearLayout mProgressBar;
+    private boolean isHasCreated = false;
     protected ContactsAdapter mContactsAdapter;
     private QueryContactsHandler mQueryContactsHandler;
-    private  String mQueryString;
-
+    private String mQueryString;
+    ProgressHandler mProgressHandler;
     private static final String PERSONAL_QUERY_SELECTION =
-            ContactsContract.Contacts.DISPLAY_NAME   + " LIKE ? || '%'" + " OR " +
-                    ContactsContract.Contacts.DISPLAY_NAME   + " LIKE '%' || ' ' || ? || '%'" + " OR " +
-                    ContactsContract.Contacts.DISPLAY_NAME   + " LIKE '+' || ? || '%'" + " OR " +
-                    ContactsContract.Contacts.DISPLAY_NAME   + " LIKE '(' || ? || '%'";
+            ContactsContract.Contacts.DISPLAY_NAME + " LIKE ? || '%'" + " OR " +
+                    ContactsContract.Contacts.DISPLAY_NAME + " LIKE '%' || ' ' || ? || '%'" + " OR " +
+                    ContactsContract.Contacts.DISPLAY_NAME + " LIKE '+' || ? || '%'" + " OR " +
+                    ContactsContract.Contacts.DISPLAY_NAME + " LIKE '(' || ? || '%'";
     private static final String SORT_KEY_ORDER = "sort_key COLLATE LOCALIZED ASC";
-
 
 
     private Handler mStopLoadHandler = new Handler() {
 
         public void handleMessage(Message msg) {
-            switch(msg.what){
+            switch (msg.what) {
                 case QUERY_COMPLETE:
-//                        mEmptyView.setVisibility(View.GONE);
-//                        mQueryProgressView.setVisibility(View.GONE);
-//                        mEmptyTextView.setVisibility(View.GONE);
+
+                    showProgressBar(false);
                     break;
                 case QUERY_NO_CONTACTS:
-//                        mEmptyView.setVisibility(View.VISIBLE);
-//                        mQueryProgressView.setVisibility(View.GONE);
-//                        mEmptyTextView.setVisibility(View.VISIBLE);
-//                        mEmptyTextView.setText(R.string.no_contacts);
+                    showProgressBar(false);
                     break;
+
                 case QUERY_NO_RESULTS:
-//                        mEmptyView.setVisibility(View.VISIBLE);
-//                        mQueryProgressView.setVisibility(View.GONE);
-//                        mEmptyTextView.setVisibility(View.VISIBLE);
-//                        mEmptyTextView.setText(R.string.no_results_found);
+                    showProgressBar(false);
+
                     break;
             }
         }
@@ -105,12 +95,11 @@ public class ContactsFragment extends Fragment {
     };
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PeopleActivity activity=(PeopleActivity) getActivity();
+        PeopleActivity activity = (PeopleActivity) getActivity();
 
         activity.setListener(new PeopleActivity.Listener() {
 
@@ -141,26 +130,28 @@ public class ContactsFragment extends Fragment {
                 return true;
             }
 
-            @Override
-            public boolean onClose() {
 
-                return true;
-            }
         });
 
 
     }
 
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext=context;
+    }
 
-    @SuppressLint("InflateParams")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_listview, container, false);
         mContactsListView = (ListView) root.findViewById(R.id.contacts_listview);
+
+        mProgressHandler = new ProgressHandler();
         buildLayout(root);
-        mQueryContactsHandler = new QueryContactsHandler(getActivity());
-        mContactsAdapter = new ContactsAdapter(getActivity());
+        mQueryContactsHandler = new QueryContactsHandler(mContext);
+        mContactsAdapter = new ContactsAdapter(mContext);
         mContactsListView.setAdapter(mContactsAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
@@ -169,20 +160,22 @@ public class ContactsFragment extends Fragment {
             public void onClick(View v) {
                 Uri insertUri = ContactsContract.Contacts.CONTENT_URI;
 
-                if(Constants.isgithub) {
+                if (Constants.isgithub) {
 
                     Intent intent = new Intent(Intent.ACTION_INSERT, insertUri);
                     startActivityForResult(intent, 1008);
-                }else{
+                } else {
 
-                    startActivity(new Intent(Intent.ACTION_INSERT,insertUri));
+                    Intent intent = new Intent(mContext, ContactEditorActivity.class);
+                    intent.setAction(Intent.ACTION_INSERT);
+                    startActivity(intent);
                 }
             }
         });
         fab.attachToListView(mContactsListView, new ScrollDirectionListener() {
             @Override
             public void onScrollDown() {
-             //   Log.d("ListViewFragment", "onScrollDown()");
+                //   Log.d("ListViewFragment", "onScrollDown()");
 
             }
 
@@ -202,23 +195,22 @@ public class ContactsFragment extends Fragment {
 
             }
         });
-          overlayThread = new OverlayThread();
+
 
         isHasCreated = true;
-
 
 
         return root;
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
 
         super.onResume();
 
         initOverlay();
 
-        if(isHasCreated){
+        if (isHasCreated) {
             startQuery();
             isHasCreated = false;
         }
@@ -236,9 +228,8 @@ public class ContactsFragment extends Fragment {
     }
 
 
-
     private void initOverlay() {
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        LayoutInflater inflater = LayoutInflater.from(mContext);
         mOverlayView = (TextView) inflater.inflate(R.layout.overlay, null);
         mOverlayView.setVisibility(View.INVISIBLE);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
@@ -247,57 +238,30 @@ public class ContactsFragment extends Fragment {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 PixelFormat.TRANSLUCENT);
-        windowManager = (WindowManager) getActivity()
+        windowManager = (WindowManager) mContext
                 .getSystemService(Context.WINDOW_SERVICE);
         windowManager.addView(mOverlayView, lp);
     }
 
 
-    private void buildLayout(View v){
-//
-//
-//            mContactsListView = (ListView) v.findViewById(R.id.contacts_listview);
-//
-//            mSearchTextView = (EditText) v.findViewById(R.id.search_edittext);
-////            mSearchTextView.addTextChangedListener(mSearchTextWatcher);
-////
-////            mContactAlphaView = (ContactAlphaView) v.findViewById(R.id.contact_alpha_view);
-////            mContactAlphaView.setOnAlphaChangedListener(this);
-//
-//            mEmptyView = v.findViewById(R.id.empty_layout);
-//            mQueryProgressView = v.findViewById(R.id.query_proLoading);
-//            mEmptyTextView = (TextView) v.findViewById(R.id.empty_textview);
-//            mEmptyView.setVisibility(View.VISIBLE);
-//            mQueryProgressView.setVisibility(View.VISIBLE);
-//            mEmptyTextView.setVisibility(View.GONE);
-//
-//            mSearchClearButton = (ImageButton) v.findViewById(R.id.button_search_clear);
-//            mSearchClearButton.setVisibility(View.GONE);
-//            mSearchClearButton.setOnClickListener(new View.OnClickListener() {
-//
-//                @Override
-//                public void onClick(View v) {
-//                    mSearchTextView.getEditableText().clear();
-//                }
-//            });
-//
-////            mContactsListView.setOnTouchListener(mOnTouchListener);
-////            mEmptyView.setOnTouchListener(mOnTouchListener);
-//
+    private void buildLayout(View v) {
+
+        mProgressBar = (LinearLayout) v.findViewById(R.id.progressBar);
+        showProgressBar(true);
         mContactsListView.setOnItemClickListener(onItemClickListener);
-//
+
     }
 
 
-    private void startQuery(){
-        if(mQueryString!=null){
-            startSearchQuery( mQueryString);
+    public void startQuery() {
+        if (mQueryString != null) {
+            startSearchQuery(mQueryString);
         } else {
             startEmptyQuery();
         }
     }
 
-    private void startEmptyQuery(){
+    private void startEmptyQuery() {
 
 
         if (mQueryContactsHandler == null) {
@@ -314,25 +278,24 @@ public class ContactsFragment extends Fragment {
                 SORT_KEY_ORDER);
     }
 
-    private void startSearchQuery(String search){
+    private void startSearchQuery(String search) {
 
-        if(mContactsAdapter == null){
+        if (mContactsAdapter == null) {
 
             return;
         }
 
         mContactsAdapter.getFilter().filter(search);
-        if(mContactsAdapter.getCount() > 0){
+        if (mContactsAdapter.getCount() > 0) {
             mContactsListView.setSelection(0);
         }
     }
 
-    private void switchContactInfo(long personId){
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID, personId);
-        getActivity().startActivity(intent);
+    private void switchContactInfo(long personId) {
+        Intent intent = new Intent(mContext,ContactDetailActivity.class);
 
+        intent.putExtra(Constants.EXTRA_CONTACT_PERSON_ID, personId);
+        startActivity(intent);
 
 
     }
@@ -345,8 +308,9 @@ public class ContactsFragment extends Fragment {
         }
 
     }
+
     @Override
-    public void onPause(){
+    public void onPause() {
 
         super.onPause();
         try {
@@ -357,7 +321,7 @@ public class ContactsFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
 
         super.onDestroy();
         if (mQueryContactsHandler != null) {
@@ -368,13 +332,11 @@ public class ContactsFragment extends Fragment {
     }
 
 
-
-
-    private  OnItemClickListener onItemClickListener = new OnItemClickListener() {
+    private OnItemClickListener onItemClickListener = new OnItemClickListener() {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if(mContactsAdapter == null){
+            if (mContactsAdapter == null) {
 
                 return;
             }
@@ -391,7 +353,7 @@ public class ContactsFragment extends Fragment {
     };
 
 
-    private class ContactItemView{
+    private class ContactItemView {
         public TextView sectionView;
         public TextView nameView;
         public ImageView photoView;
@@ -399,16 +361,15 @@ public class ContactsFragment extends Fragment {
     }
 
 
-
     protected class ContactsAdapter extends ResourceCursorAdapter {
 
         private Context mContext;
-            private ImageLoader mImageLoader;
+        private ImageLoader mImageLoader;
 
         public ContactsAdapter(Context context) {
             super(context, R.layout.contacts_list_item_layout, null);
             this.mContext = context;
-               mImageLoader = new ImageLoader(context, ImageLoader.TYPE_CONTACTS);
+            mImageLoader = new ImageLoader(context, ImageLoader.TYPE_CONTACTS);
         }
 
 
@@ -426,8 +387,8 @@ public class ContactsFragment extends Fragment {
                     new String[]{what, what, what, what},
                     SORT_KEY_ORDER);
 
-            if(cursor == null || cursor.isClosed() || cursor.getCount() == 0){
-                if(TextUtils.isEmpty(what)) {
+            if (cursor == null || cursor.isClosed() || cursor.getCount() == 0) {
+                if (TextUtils.isEmpty(what)) {
                     mStopLoadHandler.sendEmptyMessage(QUERY_NO_CONTACTS);
                 } else {
                     mStopLoadHandler.sendEmptyMessage(QUERY_NO_RESULTS);
@@ -453,36 +414,20 @@ public class ContactsFragment extends Fragment {
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            if(cursor == null || cursor.isClosed()){
+            if (cursor == null || cursor.isClosed()) {
                 return;
             }
             final ContactItemView cache = (ContactItemView) view.getTag();
             String name = cursor.getString(ContactsProjection.PersonalContacts.DISPLAY_NAME_COLUMN_INDEX);
-
-            cache.nameView.setText(TextUtils.isEmpty(name) ? "" : name);
-
-//            if(isInSearching()){
-//                cache.sectionView.setVisibility(View.GONE);
-//            } else {
-//
-//            }                int position = cursor.getPosition();
-//            int section = mAlphabetIndexer.getSectionForPosition(position);
-//            if (position == mAlphabetIndexer.getPositionForSection(section)) {
-//                cache.sectionView.setText(getTitle(name));
-//                cache.sectionView.setVisibility(View.VISIBLE);
-//                cache.sectionView.setOnClickListener(null);
-//            } else {
-//                cache.sectionView.setVisibility(View.GONE);
-//            }
-
             long photoId = cursor.getLong(ContactsProjection.PersonalContacts.PHOTO_ID_COLUMN_INDEX);
-            if(photoId <= 0){
-            cache.photoView.setImageResource(R.drawable.icon_contact_list_default_round_photo);
-                   return;
-              }
+            cache.nameView.setText(name);
+            if (photoId <= 0) {
+                cache.photoView.setImageResource(R.drawable.icon_contact_list_default_round_photo);
+                return;
+            }
 
-          //  Picasso.with(mContext).load(String.valueOf(photoId)).into(cache.photoView);
-                mImageLoader.displayImage(String.valueOf(photoId), cache.photoView);
+            //  Picasso.with(mContext).load(String.valueOf(photoId)).into(cache.photoView);
+            mImageLoader.displayImage(String.valueOf(photoId), cache.photoView);
 
         }
     }
@@ -501,9 +446,7 @@ public class ContactsFragment extends Fragment {
             }
 
             if (!getActivity().isFinishing()) {
-                //         mAlphabetIndexer = new AlphabetIndexer(cursor, PersonalContacts.SORT_KEY_INDEX, ALPHABET_INDEXS);
-
-                if(cursor.getCount() > 0) {
+                if (cursor.getCount() > 0) {
                     mStopLoadHandler.sendEmptyMessage(QUERY_COMPLETE);
                 } else {
                     mStopLoadHandler.sendEmptyMessage(QUERY_NO_CONTACTS);
@@ -518,6 +461,15 @@ public class ContactsFragment extends Fragment {
         }
     }
 
+    private void showProgressBar(boolean show) {
+        if (show) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            mProgressBar.startAnimation(AnimationUtils.loadAnimation(
+                    mContext, android.R.anim.fade_out));
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }
 
 
 }

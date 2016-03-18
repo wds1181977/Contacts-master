@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/Contacts-master.iml" filepath="$PROJECT_DIR$/Contacts-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library-circular/library-circular.iml" filepath="$PROJECT_DIR$/library-circular/library-circular.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library_circular/library_circular.iml" filepath="$PROJECT_DIR$/library_circular/library_circular.iml" />
     </modules>
   </component>
 </project>

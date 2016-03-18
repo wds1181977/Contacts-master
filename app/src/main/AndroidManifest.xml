@@ -54,13 +54,14 @@
             <intent-filter android:label="@string/edit">
                 <action android:name="android.intent.action.EDIT" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.yarin.android.mycontacts" />
 
 
             </intent-filter>
             <intent-filter android:label="@string/menu_done">
                 <action android:name="android.intent.action.INSERT" />
                 <category android:name="android.intent.category.DEFAULT" />
-
+                <data android:mimeType="vnd.android.cursor.dir/vnd.yarin.android.mycontacts" />
             </intent-filter>
         </activity>
 
