@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/F:/Android%20Source/Contacts-master/library-circular/build/intermediates/bundles/debug/res/values-v21/values-v21.xml -->
+    <eat-comment/>
+    <style name="CPB" parent="android:Widget.Material.ProgressBar">
+    </style>
+</resources>

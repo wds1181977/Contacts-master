@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/F:/Android%20Source/Contacts-master/library_circular/build/intermediates/bundles/debug/res/values-v11/values-v11.xml -->
+    <eat-comment/>
+    <style name="SPB" parent="android:Widget.Holo.ProgressBar.Horizontal">
+    </style>
+</resources>

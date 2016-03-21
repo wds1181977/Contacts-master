@@ -18,12 +18,12 @@ public class ContactsProjection {
 		};
 		
 		public static final String[] PERSONAL_CONTACTS_SUMMARY_PROJECTION = new String[] {
-				ContactsContract.Contacts._ID, // 0
-				ContactsContract.Contacts.DISPLAY_NAME, // 1
-				ContactsContract.Contacts.STARRED, // 2
-				ContactsContract.Contacts.HAS_PHONE_NUMBER, // 3
-				ContactsContract.Contacts.PHOTO_ID, // 4
-				ContactsContract.Contacts.LOOKUP_KEY, // 5
+				ContactsContract.Contacts._ID, // 0  联系人的id
+				ContactsContract.Contacts.DISPLAY_NAME, // 1    联系人的姓名
+				ContactsContract.Contacts.STARRED, // 21表示该联系人是用星号标记的，即favorite的联系人；0表示没有用星号标记
+				ContactsContract.Contacts.HAS_PHONE_NUMBER, // 是否是1决定data表中有无电话记3
+				ContactsContract.Contacts.PHOTO_ID, // 4 联系人头像id
+				ContactsContract.Contacts.LOOKUP_KEY, // 5// 联系人的查询键
 				CONTACTS_SORT_KEY
 		};
 

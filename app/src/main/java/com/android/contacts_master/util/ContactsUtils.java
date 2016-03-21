@@ -647,7 +647,7 @@ public class ContactsUtils {
         }
         return context.getString(R.string.email_tag_other);
     }
-    
+    //获取邮箱
     public static List<EmailContact> getEmailAddresses(Context context, long contactId) {
         ArrayList<EmailContact> list = new ArrayList<EmailContact>();
         if (contactId < 0) {
@@ -712,7 +712,7 @@ public class ContactsUtils {
     private static final int DISPLAY_NAME_INDX10 = 1;
     private static final int LABEL_INDX10 = 2;
     private static final int DATA_INDX10 = 3;
-    
+    //通过ID获取电话号码
     public static List<TaggedContactPhoneNumber> getPersonalContactPhoneNumbers(Context context, long contactId) {
         ArrayList<TaggedContactPhoneNumber> list = new ArrayList<TaggedContactPhoneNumber>();
         if (contactId < 0) {
@@ -806,7 +806,7 @@ public class ContactsUtils {
     private static final int CONTACT_ID_INDX7 		= 6;
     private static final int LOOKUP_KEY_INDX7 		= 7;
     private static final int PHOTO_ID_INDX7 		= 8;
-    
+    //通过ID获取联系人详情对象姓名和头像ID
     public static ContactInfo getContactInfoByContactId(Context context, long contactId){
     	 if (contactId < 0) {
              if (LogLevel.MARKET) {
@@ -984,7 +984,7 @@ public class ContactsUtils {
     }
 	
 	/**
-	 * Get contact address
+	 * Get contact address获取地址
 	 * 
 	 */
 	public static List<AddressContact> getAddressContact(Context context, long contactId) {
