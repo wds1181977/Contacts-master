@@ -87,7 +87,7 @@ public class ContactEditorFragment extends Fragment {
     String mAction;
     String oldname;
 
-    private EditText mNameEdit, mPhoneEdit, mAddressEdit, mEmailEdit;
+    private EditText mNameEdit, mPhoneEdit, mEmailEdit;
     private OnFragmentInteractionListener mListener;
     ProgressHandler mProgressHandler = new ProgressHandler();
 
@@ -152,7 +152,7 @@ public class ContactEditorFragment extends Fragment {
 
         mNameEdit = (EditText) root.findViewById(R.id.edit_name);
         mPhoneEdit = (EditText) root.findViewById(R.id.edit_phone);
-        mAddressEdit = (EditText) root.findViewById(R.id.edit_address);
+
         mEmailEdit = (EditText) root.findViewById(R.id.edit_email);
 
 
@@ -307,17 +307,17 @@ public class ContactEditorFragment extends Fragment {
             return;
         }
         if (Intent.ACTION_EDIT.equals(mAction)) {
-            updateContacts(name, phone, null, email);
+            updateContacts(name, phone, email);
 
         } else {
-            insertContacts(name, phone, null, email);
+            insertContacts(name, phone,  email);
         }
 
 
     }
 
 
-    private void insertContacts(String name, String phone, String adress, String email) {
+    private void insertContacts(String name, String phone, String email) {
 
 
         ContentValues values = new ContentValues();
@@ -379,7 +379,7 @@ public class ContactEditorFragment extends Fragment {
 
 
 
-    private void  updateContacts(String name,String phone,String adress,String  email){
+    private void  updateContacts(String name,String phone,String  email){
         Cursor cursor =   mContext.getContentResolver().query(Data.CONTENT_URI,
                 new String[] { Data.RAW_CONTACT_ID },
 

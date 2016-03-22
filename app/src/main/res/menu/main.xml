@@ -11,19 +11,6 @@
             app:showAsAction="ifRoom|collapseActionView"
            android:actionViewClass="android.widget.SearchView" />
 
-    <!--<item android:id="@+id/action_search"
-        android:title="Search"
-        android:icon="@drawable/ic_search"
-        app:showAsAction="ifRoom"
-        android:actionLayout="@layout/search_bar_expanded" />-->
-
-
-
-
-
-    <item
-        android:id="@+id/setting"
-        android:title="@string/setting" />
     <item
         android:id="@+id/about"
         android:title="@string/about" />
