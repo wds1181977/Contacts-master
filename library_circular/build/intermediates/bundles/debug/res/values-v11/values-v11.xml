@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/F:/Android%20Source/Contacts-master/library_circular/src/main/res/values-v11/styles.xml -->
+    <!-- From: file:/E:/AndroidDemo/Contacts-master4/library_circular/src/main/res/values-v11/styles.xml -->
     <eat-comment/>
     <style name="SPB" parent="android:Widget.Holo.ProgressBar.Horizontal">
     </style>

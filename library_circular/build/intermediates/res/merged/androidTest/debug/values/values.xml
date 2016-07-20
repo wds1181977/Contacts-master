@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/F:/Android%20Source/Contacts-master/library_circular/build/intermediates/bundles/debug/res/values/values.xml -->
+    <!-- From: file:/E:/AndroidDemo/Contacts-master4/library_circular/build/intermediates/bundles/debug/res/values/values.xml -->
     <eat-comment/>
     <bool name="spb_default_mirror_mode">false</bool>
     <bool name="spb_default_progressiveStart_activated">false</bool>

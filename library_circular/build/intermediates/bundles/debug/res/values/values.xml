@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/F:/Android%20Source/Contacts-master/library_circular/src/main/res/values/defaults.xml -->
+    <!-- From: file:/E:/AndroidDemo/Contacts-master4/library_circular/src/main/res/values/defaults.xml -->
     <eat-comment/>
     <bool name="spb_default_mirror_mode">false</bool>
     <bool name="spb_default_progressiveStart_activated">false</bool>
@@ -11,7 +11,7 @@
     <dimen name="spb_default_stroke_width">4dp</dimen>
     <integer name="spb_default_interpolator">0</integer>
     <integer name="spb_default_sections_count">4</integer>
-    <!-- From: file:/F:/Android%20Source/Contacts-master/library_circular/src/main/res/values/about_libraries_def.xml -->
+    <!-- From: file:/E:/AndroidDemo/Contacts-master4/library_circular/src/main/res/values/about_libraries_def.xml -->
     <eat-comment/>
     <string name="define_smoothprogressbar"/>
     <string name="library_smoothprogressbar_author">Antoine Merle</string>
@@ -23,10 +23,10 @@
     <string name="library_smoothprogressbar_libraryWebsite">https://github.com/castorflex/SmoothProgressBar</string>
     <string name="library_smoothprogressbar_licenseId">apache_2_0</string>
     <string name="library_smoothprogressbar_repositoryLink">https://github.com/castorflex/SmoothProgressBar.git</string>
-    <!-- From: file:/F:/Android%20Source/Contacts-master/library_circular/src/main/res/values/defaults.xml -->
+    <!-- From: file:/E:/AndroidDemo/Contacts-master4/library_circular/src/main/res/values/defaults.xml -->
     <eat-comment/>
     <item format="float" name="spb_default_speed" type="string">1</item>
-    <!-- From: file:/F:/Android%20Source/Contacts-master/library_circular/src/main/res/values/styles.xml -->
+    <!-- From: file:/E:/AndroidDemo/Contacts-master4/library_circular/src/main/res/values/styles.xml -->
     <eat-comment/>
     <style name="SPB" parent="android:Widget.ProgressBar.Horizontal">
     </style>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/F:/Android%20Source/Contacts-master/library-circular/build/intermediates/bundles/debug/res/values/values.xml -->
+    <!-- From: file:/E:/AndroidDemo/Contacts-master4/library-circular/build/intermediates/bundles/debug/res/values/values.xml -->
     <eat-comment/>
     <color name="cpb_default_color">#33b5e5</color>
     <declare-styleable name="CircularProgressBar"><attr format="reference" name="cpbStyle"/><attr format="color" name="cpb_color"/><attr format="reference" name="cpb_colors"/><attr format="dimension" name="cpb_stroke_width"/><attr format="integer" name="cpb_min_sweep_angle"/><attr format="integer" name="cpb_max_sweep_angle"/><attr format="float" name="cpb_sweep_speed"/><attr format="float" name="cpb_rotation_speed"/></declare-styleable>
